@@ -1,0 +1,115 @@
+int ledVermelho = 13;
+int ledAmarelo = 12;
+int ledVerde = 11;
+int ledAzul = 10;
+
+int a;
+int b;
+int opCode;
+
+
+  
+  
+void setup() {   
+        pinMode(ledVermelho,OUTPUT);
+        pinMode(ledAmarelo,OUTPUT);
+        pinMode(ledVerde,OUTPUT);
+        pinMode(ledAzul,OUTPUT);
+  
+  		Serial.begin(9600);
+}
+
+void loop() {
+  
+  if(Serial.available() >= 3) {  
+    digitalWrite(ledVermelho, LOW);
+    digitalWrite(ledAmarelo, LOW);
+    digitalWrite(ledVerde, LOW);
+    digitalWrite(ledAzul, LOW);
+  
+    a = Serial.read();
+    b = Serial.read();
+    opCode = Serial.read();
+    
+    a -= 48;
+  	b -= 48;
+  	opCode -= 48;
+    
+    if(a == 1){
+      digitalWrite(ledVermelho, HIGH);
+    }   
+    if(b == 1){
+      digitalWrite(ledAmarelo, HIGH);
+    }
+    
+    switch (opCode){
+      case 0: 
+      	if(portaAnd(a,b) == 0){
+        	digitalWrite(ledVerde, LOW);
+        }else{
+			digitalWrite(ledVerde, HIGH);
+          	digitalWrite(ledAzul, HIGH);
+        }
+      	break;
+      
+      
+      case 1: 
+      	if(portaOr(a,b) == 0){
+        	digitalWrite(ledVerde, LOW);
+        }else{
+			digitalWrite(ledVerde, HIGH);
+        	if(portaAnd(a,b) == 1){
+              digitalWrite(ledAzul, HIGH);
+            }
+        }
+      	break;
+      
+      
+       case 2: 
+      	if(portaNot(a) == -2){
+        	digitalWrite(ledVerde, LOW);
+        }else{
+			digitalWrite(ledVerde, HIGH);
+        }
+      	break;
+      
+            
+      case 3: 
+      	if(somador(a,b,1) == 0){
+        	digitalWrite(ledVerde, LOW);
+          	if(somador(a,b,0) == 1){
+              digitalWrite(ledAzul, HIGH);
+            }
+        }else{
+		   	digitalWrite(ledVerde, HIGH);
+        }
+      	break; 
+    }   
+  }
+}
+
+
+int portaAnd(int v1, int v2){
+  return(a&b);
+}
+
+int portaOr(int v1, int v2){
+  return(a|b);
+}
+
+int portaNot(int v1){
+  return(~v1);
+}
+
+int portaXor(int v1, int v2){
+  return(v1^v2);
+}
+
+int somador(int v1, int v2, int param){
+  if(param == 0){
+    return portaAnd(v1,v2);
+  }
+  return portaXor(v1,v2);
+}
+
+
